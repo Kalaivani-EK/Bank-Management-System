@@ -1,0 +1,21 @@
+# Node modules
+node_modules/
+
+# Python virtual environment
+venv/
+
+# Python cache
+__pycache__/
+
+# Database
+database.db
+*.db
+
+# Environment variables
+.env
+
+# VS Code settings (optional)
+.vscode/
+
+# Python compiled files
+*.pyc
