@@ -29,3 +29,13 @@ class BankAccount(db.Model):
         db.String(20),
         default="Active"
     )
+
+    def __init__(self, customer_id=None, account_number=None, account_type=None, balance=0.0, status="Active", **kwargs):
+        super().__init__(
+            customer_id=customer_id,
+            account_number=account_number,
+            account_type=account_type,
+            balance=balance,
+            status=status,
+            **kwargs
+        )
