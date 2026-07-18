@@ -1,0 +1,125 @@
+/* Modern Table Styles - Light Glassmorphism */
+
+.page-title {
+    margin-bottom: 8px;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.table-container {
+    background-color: rgba(255, 255, 255, 0.45);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 20px;
+    padding: 16px 24px;
+    box-shadow: var(--shadow-md);
+    overflow-x: auto;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.custom-table th {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 16px;
+    text-align: left;
+    border-bottom: 2px solid rgba(var(--accent-primary-rgb), 0.15);
+}
+
+.custom-table td {
+    padding: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    color: var(--text-primary);
+}
+
+.custom-table tr:hover td {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+.custom-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Action buttons inside tables */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.approve-btn,
+.resolve-btn {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.approve-btn:hover,
+.resolve-btn:hover {
+    background-color: var(--accent-success);
+    color: white;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+}
+
+/* Reject Button - Pale Red style */
+.reject-btn {
+    background-color: var(--accent-pale-red);
+    color: var(--accent-danger);
+    border: 1px solid var(--border-pale-red);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.reject-btn:hover {
+    background-color: var(--accent-danger);
+    color: white;
+    box-shadow: 0 4px 10px rgba(185, 28, 28, 0.2);
+}
+
+/* Transaction Type Badges */
+.txn-badge {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 800;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.txn-badge.deposit {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.txn-badge.withdraw {
+    background-color: var(--accent-pale-red);
+    color: var(--accent-danger);
+    border: 1px solid var(--border-pale-red);
+}
+
+.txn-badge.transfer {
+    background-color: rgba(var(--accent-primary-rgb), 0.08);
+    color: var(--accent-primary);
+    border: 1px solid rgba(var(--accent-primary-rgb), 0.2);
+}

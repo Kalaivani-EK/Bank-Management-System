@@ -14,3 +14,12 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Node modules & build artifacts
+node_modules/
+dist/
+.vite/
+
+# Flask local database
+instance/
+*.db

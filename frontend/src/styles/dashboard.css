@@ -1,0 +1,223 @@
+/* Dashboard CSS - Light Glassmorphism */
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+/* Profile Showcase Banner */
+.profile-banner {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    box-shadow: var(--shadow-md);
+}
+
+.profile-details {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background-color: rgba(var(--accent-primary-rgb), 0.1);
+    border: 1px solid rgba(var(--accent-primary-rgb), 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-primary);
+}
+
+.profile-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke: currentColor;
+    stroke-width: 2px;
+    fill: none;
+}
+
+.profile-info h3 {
+    font-size: 20px;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+}
+
+.profile-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+}
+
+.profile-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile-meta svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 2px;
+    fill: none;
+}
+
+/* Metric Cards Grid */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-top: 10px;
+    margin-bottom: 32px;
+}
+
+.card-metric {
+    background-color: rgba(255, 255, 255, 0.45);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 160px;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+}
+
+.card-metric:hover {
+    transform: translateY(-4px);
+    border-color: rgba(var(--accent-primary-rgb), 0.25);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(var(--accent-primary-rgb), 0.05);
+}
+
+.card-metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.card-metric-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background-color: rgba(var(--accent-primary-rgb), 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-primary);
+}
+
+.card-metric-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2px;
+    fill: none;
+}
+
+.card-metric.balance .card-metric-icon {
+    color: var(--accent-success);
+    background-color: rgba(16, 185, 129, 0.08);
+}
+
+.card-metric-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 16px 0 4px;
+    letter-spacing: -0.02em;
+}
+
+.card-metric-footer {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Visualization Panel */
+.visuals-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.visual-panel {
+    background-color: rgba(255, 255, 255, 0.45);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+}
+
+.visual-panel h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.chart-placeholder {
+    height: 200px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.chart-bar {
+    width: 12%;
+    background: var(--gradient-accent);
+    border-radius: 6px 6px 0 0;
+    transition: height var(--transition-normal);
+    position: relative;
+    box-shadow: 0 2px 8px rgba(var(--accent-primary-rgb), 0.15);
+}
+
+.chart-bar::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .visuals-grid {
+        grid-template-columns: 1fr;
+    }
+}
