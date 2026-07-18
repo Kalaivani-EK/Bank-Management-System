@@ -40,3 +40,13 @@ class LoanApplication(db.Model):
         db.DateTime,
         nullable=True
     )
+
+    def __init__(self, customer_id=None, loan_type=None, amount_requested=None, duration_months=None, status="Pending", remarks=None, approved_at=None, **kwargs):
+        super().__init__()
+        self.customer_id = customer_id
+        self.loan_type = loan_type
+        self.amount_requested = amount_requested
+        self.duration_months = duration_months
+        self.status = status
+        self.remarks = remarks
+        self.approved_at = approved_at

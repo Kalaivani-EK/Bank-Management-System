@@ -41,5 +41,16 @@ class Customer(db.Model):
     default="customer"
     )
 
+    def __init__(self, name=None, email=None, password_hash=None, phone=None, address=None, kyc_status="Pending", is_active=False, role="customer", **kwargs):
+        super().__init__()
+        self.name = name
+        self.email = email
+        self.password_hash = password_hash
+        self.phone = phone
+        self.address = address
+        self.kyc_status = kyc_status
+        self.is_active = is_active
+        self.role = role
+
     def __repr__(self):
-        return f"<Customer {self.name}>"
+        return f"<Customer {self.name}>"

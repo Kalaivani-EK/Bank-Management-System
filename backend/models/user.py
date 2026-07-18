@@ -25,3 +25,10 @@ class User(db.Model):
         db.String(20),
         default="employee"
     )
+
+    def __init__(self, name=None, email=None, password_hash=None, role="employee", **kwargs):
+        super().__init__()
+        self.name = name
+        self.email = email
+        self.password_hash = password_hash
+        self.role = role

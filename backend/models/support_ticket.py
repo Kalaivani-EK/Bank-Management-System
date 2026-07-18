@@ -25,3 +25,10 @@ class SupportTicket(db.Model):
         db.String(20),
         default="Open"
     )
+
+    def __init__(self, customer_id=None, subject=None, description=None, status="Open", **kwargs):
+        super().__init__()
+        self.customer_id = customer_id
+        self.subject = subject
+        self.description = description
+        self.status = status
