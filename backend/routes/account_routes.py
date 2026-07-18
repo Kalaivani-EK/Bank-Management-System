@@ -7,6 +7,7 @@ from flask_jwt_extended import (
 from database.db import db
 from models.account import BankAccount
 from models.transaction import Transaction
+from models.customer import Customer
 
 account_bp = Blueprint(
     "account",
@@ -36,9 +37,29 @@ def create_account():
             "message": "Customer access required"
         }), 403
 
-    data = request.get_json()
+    customer = Customer.query.get(int(user_id))
+    if not customer:
+        return jsonify({"message": "Customer profile not found"}), 404
+
+    if customer.kyc_status != "Approved":
+        return jsonify({"message": "KYC approval is required to open a bank account"}), 400
+
+    if not customer.is_active:
+        return jsonify({"message": "Customer account is inactive"}), 400
+
+    data = request.get_json() or {}
     account_type = data.get("account_type")
-    initial_balance = float(data.get("initial_balance", 0.0))
+    
+    if not account_type:
+        return jsonify({"message": "account_type is required"}), 400
+
+    if account_type not in ["Savings", "Current"]:
+        return jsonify({"message": "Invalid account type. Must be Savings or Current"}), 400
+
+    try:
+        initial_balance = float(data.get("initial_balance") or 0.0)
+    except (ValueError, TypeError):
+        return jsonify({"message": "Invalid initial balance format"}), 400
 
     if initial_balance < 0:
         return jsonify({"message": "Initial balance cannot be negative"}), 400
@@ -125,8 +146,11 @@ def delete_account(id):
     if account.customer_id != int(user_id):
         return jsonify({"message": "Unauthorized"}), 403
 
-    if account.balance > 0:
-        return jsonify({"message": "Cannot delete account with a remaining balance"}), 400
+    if account.status == "Frozen":
+        return jsonify({"message": "Cannot delete a frozen account"}), 400
+
+    if account.balance != 0:
+        return jsonify({"message": "Cannot delete account with a non-zero balance"}), 400
 
     db.session.delete(account)
     db.session.commit()
