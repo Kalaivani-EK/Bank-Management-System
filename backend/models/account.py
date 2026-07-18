@@ -31,11 +31,10 @@ class BankAccount(db.Model):
     )
 
     def __init__(self, customer_id=None, account_number=None, account_type=None, balance=0.0, status="Active", **kwargs):
-        super().__init__(
-            customer_id=customer_id,
-            account_number=account_number,
-            account_type=account_type,
-            balance=balance,
-            status=status,
-            **kwargs
-        )
+        super().__init__()
+        self.customer_id = customer_id
+        self.account_number = account_number
+        self.account_type = account_type
+        self.balance = balance
+        self.status = status
+

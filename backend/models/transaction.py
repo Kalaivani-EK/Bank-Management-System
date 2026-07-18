@@ -40,13 +40,12 @@ class Transaction(db.Model):
     )
 
     def __init__(self, from_account_id=None, to_account_id=None, account_id=None, transaction_type=None, amount=None, status="Completed", created_at=None, **kwargs):
-        super().__init__(
-            from_account_id=from_account_id,
-            to_account_id=to_account_id,
-            account_id=account_id,
-            transaction_type=transaction_type,
-            amount=amount,
-            status=status,
-            created_at=created_at,
-            **kwargs
-        )
+        super().__init__()
+        self.from_account_id = from_account_id
+        self.to_account_id = to_account_id
+        self.account_id = account_id
+        self.transaction_type = transaction_type
+        self.amount = amount
+        self.status = status
+        self.created_at = created_at
+
