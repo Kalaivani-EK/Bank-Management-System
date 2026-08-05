@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import "../styles/table.css";
@@ -8,7 +8,7 @@ function AdminTickets() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
-    const fetchTickets = async () => {
+    const fetchTickets = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
 
@@ -25,11 +25,15 @@ function AdminTickets() {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        void fetchTickets();
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchTickets();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchTickets]);
 
     const resolveTicket = async (ticketId) => {
         try {
@@ -134,4 +138,4 @@ function AdminTickets() {
     );
 }
 
-export default AdminTickets;
+export default AdminTickets;

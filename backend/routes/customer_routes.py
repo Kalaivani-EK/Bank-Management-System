@@ -129,16 +129,21 @@ def customer_dashboard_summary():
     total_loans = LoanApplication.query.filter_by(customer_id=int(user_id)).count()
     open_tickets = SupportTicket.query.filter_by(customer_id=int(user_id), status="Open").count()
 
+    import calendar
     from datetime import datetime
-    months_end = [
-        ("Jan", datetime(2026, 1, 31, 23, 59, 59)),
-        ("Feb", datetime(2026, 2, 28, 23, 59, 59)),
-        ("Mar", datetime(2026, 3, 31, 23, 59, 59)),
-        ("Apr", datetime(2026, 4, 30, 23, 59, 59)),
-        ("May", datetime(2026, 5, 31, 23, 59, 59)),
-        ("Jun", datetime(2026, 6, 30, 23, 59, 59)),
-        ("Jul", datetime(2026, 7, 31, 23, 59, 59))
-    ]
+    
+    current_date = datetime.now()
+    current_year = current_date.year
+    current_month = current_date.month
+
+    months_end = []
+    month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    for m in range(1, current_month + 1):
+        _, last_day = calendar.monthrange(current_year, m)
+        months_end.append((
+            month_names[m - 1],
+            datetime(current_year, m, last_day, 23, 59, 59)
+        ))
     
     chart_data = []
     if account_ids:

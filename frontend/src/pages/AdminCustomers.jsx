@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import "../styles/table.css";
@@ -8,7 +8,7 @@ function AdminCustomers() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
-    const fetchCustomers = async () => {
+    const fetchCustomers = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await api.get(
@@ -23,11 +23,15 @@ function AdminCustomers() {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchCustomers();
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchCustomers();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchCustomers]);
 
     const handleApproveKyc = async (customerId) => {
         try {
@@ -131,4 +135,4 @@ function AdminCustomers() {
     );
 }
 
-export default AdminCustomers;
+export default AdminCustomers;

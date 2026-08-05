@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import "../styles/table.css";
@@ -12,7 +12,7 @@ function Support() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
-    const fetchTickets = async () => {
+    const fetchTickets = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await api.get("/support/my-tickets", {
@@ -24,11 +24,15 @@ function Support() {
         } catch (error) {
             console.log(error);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchTickets();
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchTickets();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchTickets]);
 
     const createTicket = async (e) => {
         e.preventDefault();
@@ -178,4 +182,4 @@ function Support() {
     );
 }
 
-export default Support;
+export default Support;

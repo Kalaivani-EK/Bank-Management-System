@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import "../styles/table.css";
@@ -12,7 +12,7 @@ function Accounts() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
-    const fetchAccounts = async () => {
+    const fetchAccounts = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await api.get("/accounts/my-accounts", {
@@ -29,11 +29,15 @@ function Accounts() {
         } catch (error) {
             console.log(error);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchAccounts();
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchAccounts();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchAccounts]);
 
     const handleCreateAccount = async (e) => {
         e.preventDefault();
@@ -253,4 +257,4 @@ function Accounts() {
     );
 }
 
-export default Accounts;
+export default Accounts;

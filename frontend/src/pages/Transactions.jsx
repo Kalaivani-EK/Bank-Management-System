@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import "../styles/table.css";
@@ -14,7 +14,7 @@ function Transactions() {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
-    const fetchTransactions = async (pageNumber = 1) => {
+    const fetchTransactions = useCallback(async (pageNumber = 1) => {
         try {
             const token = localStorage.getItem("token");
             let url = `/transactions/history?page=${pageNumber}&per_page=10`;
@@ -32,11 +32,15 @@ function Transactions() {
         } catch (error) {
             console.error("Error fetching transactions", error);
         }
-    };
+    }, [endDate, startDate, typeFilter]);
 
     useEffect(() => {
-        fetchTransactions(1);
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchTransactions(1);
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchTransactions]);
 
     const handleSearch = (e) => {
         e.preventDefault();

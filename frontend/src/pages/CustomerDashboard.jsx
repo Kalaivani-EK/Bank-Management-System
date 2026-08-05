@@ -19,7 +19,6 @@ function CustomerDashboard() {
         address: "-",
         kyc_status: "Pending"
     });
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -31,7 +30,7 @@ function CustomerDashboard() {
                     api.get("/customer/dashboard-summary", { headers }),
                     api.get("/customer/profile", { headers }).catch(e => {
                         console.error("Profile fetch error, using defaults", e);
-                        return { data: profile };
+                        return { data: null };
                     })
                 ]);
 
@@ -45,12 +44,10 @@ function CustomerDashboard() {
                 }
             } catch (error) {
                 console.log("Error loading dashboard data", error);
-            } finally {
-                setLoading(false);
             }
         };
 
-        fetchDashboardData();
+        void fetchDashboardData();
     }, []);
 
     return (

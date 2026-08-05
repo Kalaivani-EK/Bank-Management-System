@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import "../styles/table.css";
@@ -14,7 +14,7 @@ function AdminLoans() {
     const [remarks, setRemarks] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const fetchLoans = async () => {
+    const fetchLoans = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
 
@@ -31,11 +31,15 @@ function AdminLoans() {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        void fetchLoans();
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchLoans();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchLoans]);
 
     const openDecisionModal = (loan, decisionType) => {
         setSelectedLoan(loan);

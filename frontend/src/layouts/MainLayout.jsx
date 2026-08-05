@@ -3,7 +3,6 @@ import "../styles/layout.css";
 
 function MainLayout({ children }) {
     const role = localStorage.getItem("role") || "customer";
-    const email = localStorage.getItem("email") || (role === "admin" ? "admin@bank.com" : "customer@bank.com");
     const name = role === "admin" ? "System Admin" : "Bank Customer";
     const location = useLocation();
 
@@ -26,7 +25,14 @@ function MainLayout({ children }) {
             <div className="sidebar d-flex flex-column justify-content-between">
                 <div>
                     <div className="sidebar-header d-flex align-items-center gap-3 mb-4">
-                        <div className="sidebar-brand-icon d-flex align-items-center justify-content-center">A</div>
+                        <div className="sidebar-brand-icon d-flex align-items-center justify-content-center">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 21h18" />
+                                <path d="M5 21V9l7-5 7 5v12" />
+                                <path d="M9 21V12h6v9" />
+                                <path d="M8 10h8" />
+                            </svg>
+                        </div>
                         <h1 className="m-0">APEX BANK</h1>
                     </div>
 
@@ -138,4 +144,4 @@ function MainLayout({ children }) {
 }
 
 
-export default MainLayout;
+export default MainLayout;
