@@ -4,10 +4,10 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-from models.customer import Customer
-from models.account import BankAccount
-from models.loan import LoanApplication
-from models.support_ticket import SupportTicket
+from backend.models.customer import Customer
+from backend.models.account import BankAccount
+from backend.models.loan import LoanApplication
+from backend.models.support_ticket import SupportTicket
 
 customer_bp = Blueprint(
     "customer",
@@ -105,8 +105,8 @@ def customer_dashboard_summary():
     if user_type != "customer":
         return jsonify({"message": "Customer access required"}), 403
 
-    from models.transaction import Transaction
-    from database.db import db
+    from backend.models.transaction import Transaction
+    from backend.database.db import db
 
     accounts = BankAccount.query.filter_by(customer_id=int(user_id)).all()
     account_ids = [acc.id for acc in accounts]

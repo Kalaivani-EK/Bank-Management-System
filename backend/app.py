@@ -1,28 +1,28 @@
 from flask import Flask
 
-from config import Config
-from database.db import db
+from backend.config import Config
+from backend.database.db import db
 from datetime import timedelta
 
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
-from routes.auth_routes import auth_bp
-from routes.admin_routes import admin_bp
-from routes.customer_routes import customer_bp
-from routes.account_routes import account_bp
-from routes.transaction_routes import transaction_bp
-from routes.loan_routes import loan_bp
-from routes.support_routes import support_bp
+from backend.routes.auth_routes import auth_bp
+from backend.routes.admin_routes import admin_bp
+from backend.routes.customer_routes import customer_bp
+from backend.routes.account_routes import account_bp
+from backend.routes.transaction_routes import transaction_bp
+from backend.routes.loan_routes import loan_bp
+from backend.routes.support_routes import support_bp
 
-from models.customer import Customer
-from models.account import BankAccount
-from models.transaction import Transaction
-from models.loan import LoanApplication
-from models.support_ticket import SupportTicket
-from models.user import User
+from backend.models.customer import Customer
+from backend.models.account import BankAccount
+from backend.models.transaction import Transaction
+from backend.models.loan import LoanApplication
+from backend.models.support_ticket import SupportTicket
+from backend.models.user import User
 
-from utils.admin_seeder import create_admin
+from backend.utils.admin_seeder import create_admin
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)

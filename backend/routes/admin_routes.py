@@ -1,14 +1,14 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
-from models.account import BankAccount
-from models.transaction import Transaction
-from models.loan import LoanApplication
-from models.support_ticket import SupportTicket
-from models.customer import Customer
+from backend.models.account import BankAccount
+from backend.models.transaction import Transaction
+from backend.models.loan import LoanApplication
+from backend.models.support_ticket import SupportTicket
+from backend.models.customer import Customer
 
-from utils.role_checker import get_current_user
-from database.db import db
+from backend.utils.role_checker import get_current_user
+from backend.database.db import db
 
 admin_bp = Blueprint(
     "admin",
@@ -284,7 +284,7 @@ def admin_deposit():
 @admin_bp.route("/check-admin")
 def check_admin():
 
-    from models.user import User
+    from backend.models.user import User
 
     admin = User.query.filter_by(
         email="admin@bank.com"

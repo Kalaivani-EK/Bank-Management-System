@@ -4,10 +4,10 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-from database.db import db
-from models.account import BankAccount
-from models.transaction import Transaction
-from models.customer import Customer
+from backend.database.db import db
+from backend.models.account import BankAccount
+from backend.models.transaction import Transaction
+from backend.models.customer import Customer
 
 account_bp = Blueprint(
     "account",

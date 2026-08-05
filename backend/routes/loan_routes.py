@@ -5,8 +5,8 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-from database.db import db
-from models.loan import LoanApplication
+from backend.database.db import db
+from backend.models.loan import LoanApplication
 
 loan_bp = Blueprint(
     "loan",

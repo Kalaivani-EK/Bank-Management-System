@@ -1,7 +1,7 @@
 from flask_jwt_extended import get_jwt_identity
 
-from models.customer import Customer
-from models.user import User
+from backend.models.customer import Customer
+from backend.models.user import User
 
 
 def get_current_user():

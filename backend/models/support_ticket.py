@@ -1,4 +1,4 @@
-from database.db import db
+from backend.database.db import db
 
 class SupportTicket(db.Model):
     __tablename__ = "support_tickets"
