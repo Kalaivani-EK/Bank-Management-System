@@ -43,6 +43,115 @@ A comprehensive web application designed to manage banking operations for both C
 
 ---
 
+## 📊 Entity-Relationship (ER) Diagram
+
+```mermaid
+erDiagram
+    CUSTOMERS ||--o{ BANK_ACCOUNTS : "owns"
+    CUSTOMERS ||--|| CUSTOMER_PROFILES : "has profile"
+    CUSTOMERS ||--o{ CUSTOMER_ACTIVITIES : "logs activity"
+    CUSTOMERS ||--o{ LOANS : "applies for"
+    CUSTOMERS ||--o{ SUPPORT_TICKETS : "submits"
+    BANK_ACCOUNTS ||--o{ TRANSACTIONS : "participates in"
+    TRANSACTIONS ||--o| RECEIPTS : "generates"
+
+    CUSTOMERS {
+        int id PK
+        string name
+        string email
+        string password_hash
+        string phone
+        string address
+        string kyc_status
+        boolean is_active
+        string role
+    }
+
+    CUSTOMER_PROFILES {
+        int id PK
+        int customer_id FK
+        string profile_photo
+        string dob
+        string gender
+        string occupation
+        string annual_income
+        string nominee_name
+        string emergency_name
+        int credit_score
+        boolean two_factor_enabled
+    }
+
+    BANK_ACCOUNTS {
+        int id PK
+        int customer_id FK
+        string account_number
+        string account_type
+        float balance
+        string transaction_pin_hash
+        string status
+    }
+
+    TRANSACTIONS {
+        int id PK
+        int account_id FK
+        int from_account_id
+        int to_account_id
+        string transaction_type
+        float amount
+        string status
+        datetime created_at
+    }
+
+    RECEIPTS {
+        int id PK
+        string receipt_id
+        int transaction_id FK
+        string sender_name
+        string receiver_name
+        float amount
+        string transfer_type
+        datetime generated_at
+    }
+
+    LOANS {
+        int id PK
+        int customer_id FK
+        string loan_type
+        float amount
+        int tenure_months
+        string purpose
+        string status
+        datetime created_at
+    }
+
+    SUPPORT_TICKETS {
+        int id PK
+        int customer_id FK
+        string subject
+        string description
+        string status
+        datetime created_at
+    }
+
+    USERS {
+        int id PK
+        string name
+        string email
+        string password_hash
+        string role
+    }
+
+    CUSTOMER_ACTIVITIES {
+        int id PK
+        int customer_id FK
+        string activity_type
+        string description
+        datetime created_at
+    }
+```
+
+---
+
 ## 📂 Directory Structure
 
 ```text
