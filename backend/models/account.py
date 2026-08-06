@@ -25,16 +25,22 @@ class BankAccount(db.Model):
         default=0.0
     )
 
+    transaction_pin_hash = db.Column(
+        db.String(128),
+        nullable=True
+    )
+
     status = db.Column(
         db.String(20),
         default="Active"
     )
 
-    def __init__(self, customer_id=None, account_number=None, account_type=None, balance=0.0, status="Active", **kwargs):
+    def __init__(self, customer_id=None, account_number=None, account_type=None, balance=0.0, status="Active", transaction_pin_hash=None, **kwargs):
         super().__init__()
         self.customer_id = customer_id
         self.account_number = account_number
         self.account_type = account_type
         self.balance = balance
         self.status = status
-
+        self.transaction_pin_hash = transaction_pin_hash
+

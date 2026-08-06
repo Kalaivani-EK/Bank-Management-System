@@ -8,6 +8,7 @@ from database.db import db
 from models.account import BankAccount
 from models.transaction import Transaction
 from models.customer import Customer
+from utils.pin_utils import validate_transaction_pin, hash_transaction_pin
 
 account_bp = Blueprint(
     "account",
@@ -56,6 +57,13 @@ def create_account():
     if account_type not in ["Savings", "Current"]:
         return jsonify({"message": "Invalid account type. Must be Savings or Current"}), 400
 
+    pin = data.get("transaction_pin")
+    confirm_pin = data.get("confirm_transaction_pin")
+
+    is_valid_pin, pin_error = validate_transaction_pin(pin, confirm_pin)
+    if not is_valid_pin:
+        return jsonify({"message": pin_error}), 400
+
     try:
         initial_balance = float(data.get("initial_balance") or 0.0)
     except (ValueError, TypeError):
@@ -71,12 +79,15 @@ def create_account():
         if not exists:
             break
 
+    hashed_pin = hash_transaction_pin(pin)
+
     account = BankAccount(
         customer_id=int(user_id),
         account_number=account_number,
         account_type=account_type,
         balance=initial_balance,
-        status="Active"
+        status="Active",
+        transaction_pin_hash=hashed_pin
     )
 
     db.session.add(account)
@@ -96,7 +107,7 @@ def create_account():
     db.session.commit()
 
     return jsonify({
-        "message": "Account created successfully",
+        "message": "Your account has been created successfully. Your transaction PIN has been set successfully.",
         "account_number": account_number
     }), 201
 

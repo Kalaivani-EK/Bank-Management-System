@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -21,22 +21,24 @@ function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
+                <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/dashboard" element={<CustomerDashboard />} />
                 <Route path="/accounts" element={<Accounts />} />
-                <Route path="/transactions"element={<Transactions />}/>
-                <Route path="/loans"element={<Loans />}/>
-                <Route path="/support"element={<Support />}/>
-                <Route path="/admin-dashboard"element={<AdminDashboard />}/>
-                <Route path="/admin-customers"element={<AdminCustomers />}/>
-                <Route path="/admin-loans"element={<AdminLoans />}/>
-                <Route path="/admin-tickets"element={<AdminTickets />}/>
+                <Route path="/transactions" element={<Transactions />} />
+                <Route path="/loans" element={<Loans />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                <Route path="/admin-customers" element={<AdminCustomers />} />
+                <Route path="/admin-loans" element={<AdminLoans />} />
+                <Route path="/admin-tickets" element={<AdminTickets />} />
                 <Route path="/admin/accounts" element={<AdminAccounts />} />
                 <Route path="/admin/transactions" element={<AdminTransactions />} />
                 <Route path="/deposit" element={<Deposit />} />
                 <Route path="/withdraw" element={<Withdraw />} />
                 <Route path="/transfer" element={<Transfer />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
         </BrowserRouter>
     );

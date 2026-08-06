@@ -48,8 +48,10 @@ function Login() {
                 {/* Brand Showcase Panel */}
                 <div className="login-brand-panel col-md-6 d-flex flex-column justify-content-between p-5">
                     <div className="brand-logo d-flex align-items-center gap-2">
-                        <div className="brand-icon">A</div>
-                        <span className="brand-title">APEX BANK</span>
+                        <div className="brand-icon">
+                            <img src="/finova-logo.png" alt="Finova logo" />
+                        </div>
+                        <span className="brand-title">FINOVA</span>
                     </div>
 
                     <div className="brand-promo mt-auto">
@@ -127,4 +129,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default Login;

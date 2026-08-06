@@ -3,6 +3,7 @@ from flask import Flask
 from config import Config
 from database.db import db
 from datetime import timedelta
+from sqlalchemy import inspect, text
 
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -18,6 +19,7 @@ from routes.support_routes import support_bp
 from models.customer import Customer
 from models.account import BankAccount
 from models.transaction import Transaction
+from models.receipt import Receipt
 from models.loan import LoanApplication
 from models.support_ticket import SupportTicket
 from models.user import User
@@ -91,6 +93,17 @@ def home():
 
 with app.app_context():
     db.create_all()
+
+    try:
+        inspector = inspect(db.engine)
+        if "bank_accounts" in inspector.get_table_names():
+            columns = [col["name"] for col in inspector.get_columns("bank_accounts")]
+            if "transaction_pin_hash" not in columns:
+                db.session.execute(text("ALTER TABLE bank_accounts ADD COLUMN transaction_pin_hash VARCHAR(128)"))
+                db.session.commit()
+                print("Added transaction_pin_hash column to bank_accounts table.")
+    except Exception as e:
+        print("Schema check skipped:", e)
 
     create_admin()
 

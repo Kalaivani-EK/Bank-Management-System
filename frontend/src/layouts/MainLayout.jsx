@@ -26,8 +26,10 @@ function MainLayout({ children }) {
             <div className="sidebar d-flex flex-column justify-content-between">
                 <div>
                     <div className="sidebar-header d-flex align-items-center gap-3 mb-4">
-                        <div className="sidebar-brand-icon d-flex align-items-center justify-content-center">A</div>
-                        <h1 className="m-0">APEX BANK</h1>
+                        <div className="sidebar-brand-icon d-flex align-items-center justify-content-center">
+                            <img src="/finova-logo.png" alt="Finova logo" className="sidebar-brand-icon-img" />
+                        </div>
+                        <h1 className="m-0">FINOVA</h1>
                     </div>
 
                     <div className="sidebar-nav d-flex flex-column gap-2">
@@ -138,4 +140,4 @@ function MainLayout({ children }) {
 }
 
 
-export default MainLayout;
+export default MainLayout;

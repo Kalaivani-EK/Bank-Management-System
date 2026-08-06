@@ -5,9 +5,14 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
+from datetime import datetime
 from database.db import db
 from models.account import BankAccount
+from models.customer import Customer
 from models.transaction import Transaction
+from models.receipt import Receipt
+from utils.pin_utils import validate_transaction_pin
+from werkzeug.security import check_password_hash
 
 transaction_bp = Blueprint(
     "transaction",
@@ -33,9 +38,14 @@ def deposit():
     data = request.get_json()
     account_id = data.get("account_id")
     amount = data.get("amount")
+    transaction_pin = data.get("transaction_pin")
 
-    if account_id is None or amount is None:
-        return jsonify({"message": "account_id and amount are required"}), 400
+    if account_id is None or amount is None or transaction_pin is None:
+        return jsonify({"message": "account_id, amount, and transaction_pin are required"}), 400
+
+    is_valid_pin, pin_error = validate_transaction_pin(transaction_pin)
+    if not is_valid_pin:
+        return jsonify({"message": pin_error}), 400
 
     try:
         amount = float(amount)
@@ -58,6 +68,12 @@ def deposit():
         return jsonify({"message": "Account is Frozen"}), 400
     if account.status == "Closed":
         return jsonify({"message": "Account is Closed"}), 400
+
+    if not account.transaction_pin_hash:
+        return jsonify({"message": "Transaction PIN not set for this account"}), 400
+
+    if not check_password_hash(account.transaction_pin_hash, str(transaction_pin)):
+        return jsonify({"message": "Invalid transaction PIN"}), 401
 
     account.balance += amount
 
@@ -87,9 +103,14 @@ def withdraw():
     data = request.get_json()
     account_id = data.get("account_id")
     amount = data.get("amount")
+    transaction_pin = data.get("transaction_pin")
 
-    if account_id is None or amount is None:
-        return jsonify({"message": "account_id and amount are required"}), 400
+    if account_id is None or amount is None or transaction_pin is None:
+        return jsonify({"message": "account_id, amount, and transaction_pin are required"}), 400
+
+    is_valid_pin, pin_error = validate_transaction_pin(transaction_pin)
+    if not is_valid_pin:
+        return jsonify({"message": pin_error}), 400
 
     try:
         amount = float(amount)
@@ -112,6 +133,12 @@ def withdraw():
         return jsonify({"message": "Account is Frozen"}), 400
     if account.status == "Closed":
         return jsonify({"message": "Account is Closed"}), 400
+
+    if not account.transaction_pin_hash:
+        return jsonify({"message": "Transaction PIN not set for this account"}), 400
+
+    if not check_password_hash(account.transaction_pin_hash, str(transaction_pin)):
+        return jsonify({"message": "Invalid transaction PIN"}), 401
 
     # Check sufficient balance
     if account.balance < amount:
@@ -146,9 +173,14 @@ def transfer():
     sender_account_id = data.get("sender_account_id")
     receiver_account_number = data.get("receiver_account_number")
     amount = data.get("amount")
+    transaction_pin = data.get("transaction_pin")
 
-    if sender_account_id is None or not receiver_account_number or amount is None:
-        return jsonify({"message": "sender_account_id, receiver_account_number, and amount are required"}), 400
+    if sender_account_id is None or not receiver_account_number or amount is None or transaction_pin is None:
+        return jsonify({"message": "sender_account_id, receiver_account_number, amount, and transaction_pin are required"}), 400
+
+    is_valid_pin, pin_error = validate_transaction_pin(transaction_pin)
+    if not is_valid_pin:
+        return jsonify({"message": pin_error}), 400
 
     try:
         amount = float(amount)
@@ -180,6 +212,12 @@ def transfer():
         return jsonify({"message": "Sender account is Frozen"}), 400
     if from_account.status == "Closed":
         return jsonify({"message": "Sender account is Closed"}), 400
+
+    if not from_account.transaction_pin_hash:
+        return jsonify({"message": "Transaction PIN not set for this sender account"}), 400
+
+    if not check_password_hash(from_account.transaction_pin_hash, str(transaction_pin)):
+        return jsonify({"message": "Invalid transaction PIN"}), 401
 
     if receiver_account.status == "Frozen":
         return jsonify({"message": "Receiver account is Frozen"}), 400
@@ -216,7 +254,80 @@ def transfer():
     db.session.add(txn_in)
     db.session.commit()
 
-    return jsonify({"message": "Transfer successful"}), 200
+    sender = Customer.query.get(from_account.customer_id)
+    receiver = Customer.query.get(receiver_account.customer_id)
+
+    receipt_code = f"APEX-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{txn_out.id}"
+    receipt = Receipt(
+        receipt_id=receipt_code,
+        transaction_id=txn_out.id,
+        sender_account=from_account.account_number,
+        receiver_account=receiver_account.account_number,
+        sender_name=sender.name if sender else "Unknown Sender",
+        receiver_name=receiver.name if receiver else "Unknown Receiver",
+        amount=amount,
+        transfer_type="Transfer Out",
+        transaction_charges=0.0,
+        status="Success",
+        remaining_balance=from_account.balance
+    )
+
+    db.session.add(receipt)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Transfer successful",
+        "receipt": {
+            "receiptId": receipt.receipt_id,
+            "transactionId": receipt.transaction_id,
+            "generatedAt": receipt.generated_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "senderName": receipt.sender_name,
+            "senderAccount": receipt.sender_account,
+            "receiverName": receipt.receiver_name,
+            "receiverAccount": receipt.receiver_account,
+            "transferType": receipt.transfer_type,
+            "amount": receipt.amount,
+            "transactionCharges": receipt.transaction_charges,
+            "remainingBalance": receipt.remaining_balance,
+            "status": receipt.status
+        }
+    }), 200
+
+@transaction_bp.route("/receipt/<int:transaction_id>", methods=["GET"])
+@jwt_required()
+def get_receipt(transaction_id):
+    identity = get_jwt_identity()
+    user_type, user_id = identity.split(":")
+
+    if user_type != "customer":
+        return jsonify({"message": "Customer access required"}), 403
+
+    receipt = Receipt.query.filter_by(transaction_id=transaction_id).first()
+    if not receipt:
+        return jsonify({"message": "Receipt not found"}), 404
+
+    transaction = Transaction.query.get(transaction_id)
+    if not transaction:
+        return jsonify({"message": "Receipt transaction not found"}), 404
+
+    account = BankAccount.query.get(transaction.account_id)
+    if not account or account.customer_id != int(user_id):
+        return jsonify({"message": "Receipt not found"}), 404
+
+    return jsonify({
+        "receiptId": receipt.receipt_id,
+        "transactionId": receipt.transaction_id,
+        "generatedAt": receipt.generated_at.strftime("%Y-%m-%d %H:%M:%S"),
+        "senderName": receipt.sender_name,
+        "senderAccount": receipt.sender_account,
+        "receiverName": receipt.receiver_name,
+        "receiverAccount": receipt.receiver_account,
+        "transferType": receipt.transfer_type,
+        "amount": receipt.amount,
+        "transactionCharges": receipt.transaction_charges,
+        "remainingBalance": receipt.remaining_balance,
+        "status": receipt.status
+    }), 200
 
 @transaction_bp.route("/history", methods=["GET"])
 @jwt_required()

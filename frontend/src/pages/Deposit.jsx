@@ -6,6 +6,9 @@ function Deposit() {
     const [accounts, setAccounts] = useState([]);
     const [selectedAccountId, setSelectedAccountId] = useState("");
     const [amount, setAmount] = useState("");
+    const [transactionPin, setTransactionPin] = useState("");
+    const [showPin, setShowPin] = useState(false);
+    const [pinError, setPinError] = useState("");
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
@@ -31,15 +34,30 @@ function Deposit() {
         fetchAccounts();
     }, []);
 
+    const validatePin = () => {
+        if (!/^[0-9]{4}$/.test(transactionPin)) {
+            setPinError("PIN must be exactly 4 digits.");
+            return false;
+        }
+        setPinError("");
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage("");
         try {
             const token = localStorage.getItem("token");
+            if (!validatePin()) {
+                setLoading(false);
+                return;
+            }
+
             await api.post("/transactions/deposit", {
                 account_id: parseInt(selectedAccountId),
-                amount: parseFloat(amount)
+                amount: parseFloat(amount),
+                transaction_pin: transactionPin
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -110,6 +128,29 @@ function Deposit() {
                                         required
                                     />
                                 </div>
+
+                                <div className="form-group mb-4 password-toggle-group">
+                                    <label htmlFor="dep-pin">Transaction PIN</label>
+                                    <input
+                                        id="dep-pin"
+                                        type={showPin ? "text" : "password"}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter 4-digit PIN"
+                                        value={transactionPin}
+                                        onChange={(e) => setTransactionPin(e.target.value.replace(/[^0-9]/g, ""))}
+                                        maxLength="4"
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="password-toggle-icon"
+                                        onClick={() => setShowPin(!showPin)}
+                                    >
+                                        {showPin ? "🙈" : "👁"}
+                                    </button>
+                                </div>
+
+                                {pinError && <div className="inline-error mb-3">{pinError}</div>}
 
                                 <button
                                     type="submit"

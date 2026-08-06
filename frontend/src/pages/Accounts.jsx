@@ -7,8 +7,13 @@ function Accounts() {
     const [accounts, setAccounts] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [accountType, setAccountType] = useState("Savings");
-    const [clientName, setClientName] = useState("Apex Client");
+    const [clientName, setClientName] = useState("Finova Client");
     const [initialBalance, setInitialBalance] = useState("");
+    const [transactionPin, setTransactionPin] = useState("");
+    const [confirmTransactionPin, setConfirmTransactionPin] = useState("");
+    const [showPin, setShowPin] = useState(false);
+    const [showConfirmPin, setShowConfirmPin] = useState(false);
+    const [pinError, setPinError] = useState("");
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
@@ -35,15 +40,51 @@ function Accounts() {
         fetchAccounts();
     }, []);
 
+    const validatePinFields = () => {
+        if (!/^[0-9]*$/.test(transactionPin) || !/^[0-9]*$/.test(confirmTransactionPin)) {
+            setPinError("Only numeric values are allowed.");
+            return false;
+        }
+        if (transactionPin.length !== 4) {
+            setPinError("PIN must be exactly 4 digits.");
+            return false;
+        }
+        if (confirmTransactionPin.length !== 4) {
+            setPinError("PIN must be exactly 4 digits.");
+            return false;
+        }
+        if (transactionPin !== confirmTransactionPin) {
+            setPinError("PINs do not match.");
+            return false;
+        }
+        setPinError("");
+        return true;
+    };
+
+    const resetForm = () => {
+        setInitialBalance("");
+        setTransactionPin("");
+        setConfirmTransactionPin("");
+        setShowPin(false);
+        setShowConfirmPin(false);
+        setPinError("");
+    };
+
     const handleCreateAccount = async (e) => {
         e.preventDefault();
+        if (!validatePinFields()) {
+            return;
+        }
+
         try {
             const token = localStorage.getItem("token");
             const response = await api.post(
                 "/accounts/create",
-                { 
+                {
                     account_type: accountType,
-                    initial_balance: parseFloat(initialBalance || 0)
+                    initial_balance: parseFloat(initialBalance || 0),
+                    transaction_pin: transactionPin,
+                    confirm_transaction_pin: confirmTransactionPin
                 },
                 {
                     headers: {
@@ -52,18 +93,18 @@ function Accounts() {
                 }
             );
 
-            setMessage("Account opened successfully! Account Number: " + response.data.account_number);
+            setMessage(response.data?.message || "Account opened successfully!");
             setMessageType("success");
             setIsModalOpen(false);
-            setInitialBalance("");
+            resetForm();
             fetchAccounts();
 
             setTimeout(() => {
                 setMessage("");
             }, 6000);
         } catch (error) {
-            console.log(error);
-            setMessage("Failed to open account. Please try again.");
+            const errorMessage = error.response?.data?.message || "Failed to open account. Please try again.";
+            setMessage(errorMessage);
             setMessageType("danger");
         }
     };
@@ -197,7 +238,7 @@ function Accounts() {
                             <h3>Open a New Account</h3>
                             <button
                                 className="modal-close-btn"
-                                onClick={() => setIsModalOpen(false)}
+                                onClick={() => { setIsModalOpen(false); resetForm(); }}
                             >
                                 &times;
                             </button>
@@ -230,11 +271,55 @@ function Accounts() {
                                 />
                             </div>
 
+                            <div className="form-group mb-3 password-toggle-group">
+                                <label htmlFor="transaction-pin">Create 4-Digit PIN</label>
+                                <input
+                                    id="transaction-pin"
+                                    type={showPin ? "text" : "password"}
+                                    className="form-control"
+                                    placeholder="Enter 4-digit PIN"
+                                    value={transactionPin}
+                                    onChange={(e) => setTransactionPin(e.target.value.replace(/[^0-9]/g, ""))}
+                                    maxLength="4"
+                                />
+                                <button
+                                    type="button"
+                                    className="password-toggle-icon"
+                                    onClick={() => setShowPin(!showPin)}
+                                >
+                                    {showPin ? "🙈" : "👁"}
+                                </button>
+                            </div>
+
+                            <div className="form-group mb-4 password-toggle-group">
+                                <label htmlFor="confirm-transaction-pin">Confirm 4-Digit PIN</label>
+                                <input
+                                    id="confirm-transaction-pin"
+                                    type={showConfirmPin ? "text" : "password"}
+                                    className="form-control"
+                                    placeholder="Confirm 4-digit PIN"
+                                    value={confirmTransactionPin}
+                                    onChange={(e) => setConfirmTransactionPin(e.target.value.replace(/[^0-9]/g, ""))}
+                                    maxLength="4"
+                                />
+                                <button
+                                    type="button"
+                                    className="password-toggle-icon"
+                                    onClick={() => setShowConfirmPin(!showConfirmPin)}
+                                >
+                                    {showConfirmPin ? "🙈" : "👁"}
+                                </button>
+                            </div>
+
+                            {pinError && (
+                                <div className="inline-error mb-3">{pinError}</div>
+                            )}
+
                             <div className="d-flex justify-content-end gap-3">
                                 <button
                                     type="button"
                                     className="btn btn-outline-secondary"
-                                    onClick={() => { setIsModalOpen(false); setInitialBalance(""); }}
+                                    onClick={() => { setIsModalOpen(false); resetForm(); }}
                                 >
                                     Cancel
                                 </button>
@@ -253,4 +338,4 @@ function Accounts() {
     );
 }
 
-export default Accounts;
+export default Accounts;
