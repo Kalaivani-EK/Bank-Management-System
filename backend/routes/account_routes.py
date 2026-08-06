@@ -4,18 +4,11 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-<<<<<<< HEAD
-from database.db import db
-from models.account import BankAccount
-from models.transaction import Transaction
-from models.customer import Customer
-from utils.pin_utils import validate_transaction_pin, hash_transaction_pin
-=======
 from backend.database.db import db
 from backend.models.account import BankAccount
 from backend.models.transaction import Transaction
 from backend.models.customer import Customer
->>>>>>> origin/main
+from backend.utils.pin_utils import validate_transaction_pin, hash_transaction_pin
 
 account_bp = Blueprint(
     "account",

@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
-=======
-import { useCallback, useEffect, useState } from "react";
->>>>>>> origin/main
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import SuccessReceiptModal from "../components/SuccessReceiptModal";

@@ -50,26 +50,14 @@ function Register() {
                 {/* Brand Showcase Panel */}
                 <div className="login-brand-panel col-md-6 d-flex flex-column justify-content-between p-5">
                     <div className="brand-logo d-flex align-items-center gap-2">
-<<<<<<< HEAD
                         <div className="brand-icon">
                             <img src="/finova-logo.png" alt="Finova logo" />
                         </div>
                         <span className="brand-title">FINOVA</span>
-=======
-                        <div className="brand-icon d-flex align-items-center justify-content-center">
-                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M3 21h18" />
-                                <path d="M5 21V9l7-5 7 5v12" />
-                                <path d="M9 21V12h6v9" />
-                                <path d="M8 10h8" />
-                            </svg>
-                        </div>
-                        <span className="brand-title">APEX BANK</span>
->>>>>>> origin/main
                     </div>
 
                     <div className="brand-promo mt-auto">
-                        <h2 className="display-6 fw-bold">Join APEX Banking</h2>
+                        <h2 className="display-6 fw-bold">Join FINOVA Banking</h2>
                         <p className="lead">Unlock premium, secure financial services by opening an account in under 3 minutes.</p>
                         
                         <div className="brand-features d-flex flex-column gap-3 mt-4">

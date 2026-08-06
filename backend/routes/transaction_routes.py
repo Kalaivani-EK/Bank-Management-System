@@ -5,20 +5,14 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-<<<<<<< HEAD
 from datetime import datetime
-from database.db import db
-from models.account import BankAccount
-from models.customer import Customer
-from models.transaction import Transaction
-from models.receipt import Receipt
-from utils.pin_utils import validate_transaction_pin
-from werkzeug.security import check_password_hash
-=======
 from backend.database.db import db
 from backend.models.account import BankAccount
+from backend.models.customer import Customer
 from backend.models.transaction import Transaction
->>>>>>> origin/main
+from backend.models.receipt import Receipt
+from backend.utils.pin_utils import validate_transaction_pin
+from werkzeug.security import check_password_hash
 
 transaction_bp = Blueprint(
     "transaction",

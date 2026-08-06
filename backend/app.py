@@ -16,22 +16,13 @@ from backend.routes.transaction_routes import transaction_bp
 from backend.routes.loan_routes import loan_bp
 from backend.routes.support_routes import support_bp
 
-<<<<<<< HEAD
-from models.customer import Customer
-from models.account import BankAccount
-from models.transaction import Transaction
-from models.receipt import Receipt
-from models.loan import LoanApplication
-from models.support_ticket import SupportTicket
-from models.user import User
-=======
 from backend.models.customer import Customer
 from backend.models.account import BankAccount
 from backend.models.transaction import Transaction
+from backend.models.receipt import Receipt
 from backend.models.loan import LoanApplication
 from backend.models.support_ticket import SupportTicket
 from backend.models.user import User
->>>>>>> origin/main
 
 from backend.utils.admin_seeder import create_admin
 app = Flask(__name__)

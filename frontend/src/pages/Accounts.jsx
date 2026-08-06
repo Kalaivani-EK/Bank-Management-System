@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { useEffect, useState } from "react";
-=======
 import { useCallback, useEffect, useState } from "react";
->>>>>>> origin/main
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import "../styles/table.css";
@@ -11,7 +7,6 @@ function Accounts() {
     const [accounts, setAccounts] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [accountType, setAccountType] = useState("Savings");
-<<<<<<< HEAD
     const [clientName, setClientName] = useState("Finova Client");
     const [initialBalance, setInitialBalance] = useState("");
     const [transactionPin, setTransactionPin] = useState("");
@@ -22,15 +17,7 @@ function Accounts() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
-    const fetchAccounts = async () => {
-=======
-    const [clientName, setClientName] = useState("Apex Client");
-    const [initialBalance, setInitialBalance] = useState("");
-    const [message, setMessage] = useState("");
-    const [messageType, setMessageType] = useState("");
-
     const fetchAccounts = useCallback(async () => {
->>>>>>> origin/main
         try {
             const token = localStorage.getItem("token");
             const response = await api.get("/accounts/my-accounts", {
@@ -47,12 +34,15 @@ function Accounts() {
         } catch (error) {
             console.log(error);
         }
-<<<<<<< HEAD
-    };
+    }, []);
 
     useEffect(() => {
-        fetchAccounts();
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchAccounts();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchAccounts]);
 
     const validatePinFields = () => {
         if (!/^[0-9]*$/.test(transactionPin) || !/^[0-9]*$/.test(confirmTransactionPin)) {
@@ -90,35 +80,15 @@ function Accounts() {
             return;
         }
 
-=======
-    }, []);
-
-    useEffect(() => {
-        const timer = window.setTimeout(() => {
-            void fetchAccounts();
-        }, 0);
-
-        return () => window.clearTimeout(timer);
-    }, [fetchAccounts]);
-
-    const handleCreateAccount = async (e) => {
-        e.preventDefault();
->>>>>>> origin/main
         try {
             const token = localStorage.getItem("token");
             const response = await api.post(
                 "/accounts/create",
-<<<<<<< HEAD
                 {
                     account_type: accountType,
                     initial_balance: parseFloat(initialBalance || 0),
                     transaction_pin: transactionPin,
                     confirm_transaction_pin: confirmTransactionPin
-=======
-                { 
-                    account_type: accountType,
-                    initial_balance: parseFloat(initialBalance || 0)
->>>>>>> origin/main
                 },
                 {
                     headers: {
@@ -127,30 +97,18 @@ function Accounts() {
                 }
             );
 
-<<<<<<< HEAD
             setMessage(response.data?.message || "Account opened successfully!");
             setMessageType("success");
             setIsModalOpen(false);
             resetForm();
-=======
-            setMessage("Account opened successfully! Account Number: " + response.data.account_number);
-            setMessageType("success");
-            setIsModalOpen(false);
-            setInitialBalance("");
->>>>>>> origin/main
             fetchAccounts();
 
             setTimeout(() => {
                 setMessage("");
             }, 6000);
         } catch (error) {
-<<<<<<< HEAD
             const errorMessage = error.response?.data?.message || "Failed to open account. Please try again.";
             setMessage(errorMessage);
-=======
-            console.log(error);
-            setMessage("Failed to open account. Please try again.");
->>>>>>> origin/main
             setMessageType("danger");
         }
     };
@@ -284,11 +242,7 @@ function Accounts() {
                             <h3>Open a New Account</h3>
                             <button
                                 className="modal-close-btn"
-<<<<<<< HEAD
                                 onClick={() => { setIsModalOpen(false); resetForm(); }}
-=======
-                                onClick={() => setIsModalOpen(false)}
->>>>>>> origin/main
                             >
                                 &times;
                             </button>
@@ -321,7 +275,6 @@ function Accounts() {
                                 />
                             </div>
 
-<<<<<<< HEAD
                             <div className="form-group mb-3 password-toggle-group">
                                 <label htmlFor="transaction-pin">Create 4-Digit PIN</label>
                                 <input
@@ -366,17 +319,11 @@ function Accounts() {
                                 <div className="inline-error mb-3">{pinError}</div>
                             )}
 
-=======
->>>>>>> origin/main
                             <div className="d-flex justify-content-end gap-3">
                                 <button
                                     type="button"
                                     className="btn btn-outline-secondary"
-<<<<<<< HEAD
                                     onClick={() => { setIsModalOpen(false); resetForm(); }}
-=======
-                                    onClick={() => { setIsModalOpen(false); setInitialBalance(""); }}
->>>>>>> origin/main
                                 >
                                     Cancel
                                 </button>
