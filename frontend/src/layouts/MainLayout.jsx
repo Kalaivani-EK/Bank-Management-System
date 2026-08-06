@@ -119,13 +119,15 @@ function MainLayout({ children }) {
                 </div>
 
                 <div>
-                    <div className="sidebar-user d-flex align-items-center gap-3 p-3 mb-3">
-                        <div className="user-avatar d-flex align-items-center justify-content-center">{getInitials(name)}</div>
-                        <div className="user-info flex-grow-1 min-w-0">
-                            <div className="user-name text-truncate">{name}</div>
-                            <div className="user-role">{role}</div>
+                    <Link to="/profile" className="text-decoration-none text-reset">
+                        <div className="sidebar-user d-flex align-items-center gap-3 p-3 mb-3 cursor-pointer" title="Click to view & edit your profile">
+                            <div className="user-avatar d-flex align-items-center justify-content-center">{getInitials(name)}</div>
+                            <div className="user-info flex-grow-1 min-w-0">
+                                <div className="user-name text-truncate">{name}</div>
+                                <div className="user-role">{role}</div>
+                            </div>
                         </div>
-                    </div>
+                    </Link>
 
                     <button
                         className="logout-btn d-flex align-items-center justify-content-center gap-2"

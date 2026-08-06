@@ -21,6 +21,8 @@ from backend.routes.loan_routes import loan_bp
 from backend.routes.support_routes import support_bp
 
 from backend.models.customer import Customer
+from backend.models.customer_profile import CustomerProfile
+from backend.models.customer_activity import CustomerActivity
 from backend.models.account import BankAccount
 from backend.models.transaction import Transaction
 from backend.models.receipt import Receipt
@@ -96,7 +98,10 @@ def home():
     return "Bank Management Backend Running"
 
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+    except Exception as err:
+        print("Database schema initialization note:", err)
 
     try:
         inspector = inspect(db.engine)

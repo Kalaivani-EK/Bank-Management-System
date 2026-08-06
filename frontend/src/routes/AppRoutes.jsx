@@ -16,6 +16,7 @@ import AdminTransactions from "../pages/AdminTransactions";
 import Deposit from "../pages/Deposit";
 import Withdraw from "../pages/Withdraw";
 import Transfer from "../pages/Transfer";
+import CustomerProfile from "../pages/CustomerProfile";
 
 function AppRoutes() {
     return (
@@ -25,6 +26,7 @@ function AppRoutes() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/dashboard" element={<CustomerDashboard />} />
+                <Route path="/profile" element={<CustomerProfile />} />
                 <Route path="/accounts" element={<Accounts />} />
                 <Route path="/transactions" element={<Transactions />} />
                 <Route path="/loans" element={<Loans />} />
