@@ -34,7 +34,6 @@ function AdminDashboard() {
     const [trendData, setTrendData] = useState([]);
     const [distributionData, setDistributionData] = useState([]);
     const [loanBreakdownData, setLoanBreakdownData] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -55,8 +54,6 @@ function AdminDashboard() {
                 if (loanRes?.data) setLoanBreakdownData(loanRes.data);
             } catch (error) {
                 console.error("Error loading admin dashboard metrics", error);
-            } finally {
-                setLoading(false);
             }
         };
 

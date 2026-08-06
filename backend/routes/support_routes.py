@@ -5,8 +5,8 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-from database.db import db
-from models.support_ticket import SupportTicket
+from backend.database.db import db
+from backend.models.support_ticket import SupportTicket
 
 support_bp = Blueprint(
     "support",

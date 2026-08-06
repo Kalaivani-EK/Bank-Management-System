@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
+=======
+import { useCallback, useEffect, useState } from "react";
+>>>>>>> origin/main
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import SuccessReceiptModal from "../components/SuccessReceiptModal";
@@ -21,7 +25,7 @@ function Transfer() {
     const [receiptData, setReceiptData] = useState(null);
     const [downloadLoading, setDownloadLoading] = useState(false);
 
-    const fetchAccounts = async () => {
+    const fetchAccounts = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await api.get("/accounts/my-accounts", {
@@ -35,11 +39,15 @@ function Transfer() {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchAccounts();
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchAccounts();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchAccounts]);
 
     const validatePin = () => {
         if (!/^[0-9]{4}$/.test(transactionPin)) {

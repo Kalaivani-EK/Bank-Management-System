@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import "../styles/table.css";
@@ -15,7 +15,7 @@ function AdminAccounts() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
-    const fetchAccounts = async () => {
+    const fetchAccounts = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await api.get("/admin/accounts", {
@@ -25,11 +25,15 @@ function AdminAccounts() {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchAccounts();
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchAccounts();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchAccounts]);
 
     const handleCreateAccount = async (e) => {
         e.preventDefault();

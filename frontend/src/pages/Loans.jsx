@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import MainLayout from "../layouts/MainLayout";
 import "../styles/table.css";
@@ -15,7 +15,7 @@ function Loans() {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
 
-    const fetchLoans = async () => {
+    const fetchLoans = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await api.get("/loans/my-loans", {
@@ -27,11 +27,15 @@ function Loans() {
         } catch (error) {
             console.log(error);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchLoans();
-    }, []);
+        const timer = window.setTimeout(() => {
+            void fetchLoans();
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [fetchLoans]);
 
     const handleApplyLoan = async (e) => {
         e.preventDefault();
@@ -117,6 +121,9 @@ function Loans() {
                                     <option value="Home Loan">Home Loan</option>
                                     <option value="Car Loan">Car/Auto Loan</option>
                                     <option value="Education Loan">Education Loan</option>
+                                    <option value="Business Loan">Business Loan</option>
+                                    <option value="Gold Loan">Gold Loan</option>
+                                    <option value="Land/Property Loan">Land/Property Loan</option>
                                 </select>
                             </div>
 
