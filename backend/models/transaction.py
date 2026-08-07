@@ -34,12 +34,17 @@ class Transaction(db.Model):
         default="Completed"
     )
 
+    description = db.Column(
+        db.String(255),
+        nullable=True
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
     )
 
-    def __init__(self, from_account_id=None, to_account_id=None, account_id=None, transaction_type=None, amount=None, status="Completed", created_at=None, **kwargs):
+    def __init__(self, from_account_id=None, to_account_id=None, account_id=None, transaction_type=None, amount=None, status="Completed", description=None, created_at=None, **kwargs):
         super().__init__()
         self.from_account_id = from_account_id
         self.to_account_id = to_account_id
@@ -47,5 +52,6 @@ class Transaction(db.Model):
         self.transaction_type = transaction_type
         self.amount = amount
         self.status = status
+        self.description = description
         self.created_at = created_at
 

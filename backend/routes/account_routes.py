@@ -8,6 +8,7 @@ from backend.database.db import db
 from backend.models.account import BankAccount
 from backend.models.transaction import Transaction
 from backend.models.customer import Customer
+from backend.models.bank_settings import BankSettings
 from backend.utils.pin_utils import validate_transaction_pin, hash_transaction_pin
 
 account_bp = Blueprint(
@@ -21,6 +22,13 @@ def test_account():
     return {
         "message": "Account routes working"
     }
+
+@account_bp.route("/min-deposit", methods=["GET"])
+def get_min_deposit():
+    settings = BankSettings.get_settings()
+    return jsonify({
+        "minimum_initial_deposit": settings.minimum_initial_deposit
+    }), 200
 
 import random
 
@@ -69,8 +77,12 @@ def create_account():
     except (ValueError, TypeError):
         return jsonify({"message": "Invalid initial balance format"}), 400
 
-    if initial_balance < 0:
-        return jsonify({"message": "Initial balance cannot be negative"}), 400
+    settings = BankSettings.get_settings()
+    min_deposit = settings.minimum_initial_deposit
+
+    if initial_balance < min_deposit:
+        formatted_min = int(min_deposit) if min_deposit.is_integer() else min_deposit
+        return jsonify({"message": f"Initial deposit must be at least ₹{formatted_min}."}), 400
 
     # Generate unique 12-digit account number
     while True:
@@ -98,9 +110,10 @@ def create_account():
             from_account_id=account.id,
             to_account_id=account.id,
             account_id=account.id,
-            transaction_type="Deposit",
+            transaction_type="Initial Deposit",
             amount=initial_balance,
-            status="Success"
+            status="Completed",
+            description="Initial deposit during account creation."
         )
         db.session.add(transaction)
 

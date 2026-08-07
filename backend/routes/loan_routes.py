@@ -7,6 +7,7 @@ from flask_jwt_extended import (
 
 from backend.database.db import db
 from backend.models.loan import LoanApplication
+from backend.services.notification_service import NotificationService
 
 loan_bp = Blueprint(
     "loan",
@@ -44,6 +45,14 @@ def apply_loan():
     )
 
     db.session.add(loan)
+
+    NotificationService.create_notification(
+        customer_id=int(user_id),
+        title="Loan Under Review",
+        message="Your loan application is currently under review. We will notify you once a decision has been made.",
+        notification_type="loan"
+    )
+
     db.session.commit()
 
     return jsonify({

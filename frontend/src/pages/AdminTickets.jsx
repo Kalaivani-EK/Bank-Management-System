@@ -35,6 +35,34 @@ function AdminTickets() {
         return () => window.clearTimeout(timer);
     }, [fetchTickets]);
 
+    const replyTicket = async (ticketId) => {
+        try {
+            const token = localStorage.getItem("token");
+
+            await api.put(
+                `/admin/reply-ticket/${ticketId}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            setMessage("Reply sent & ticket updated!");
+            setMessageType("success");
+            fetchTickets();
+
+            setTimeout(() => {
+                setMessage("");
+            }, 6000);
+        } catch (error) {
+            console.error(error);
+            setMessage("Failed to send reply to ticket.");
+            setMessageType("danger");
+        }
+    };
+
     const resolveTicket = async (ticketId) => {
         try {
             const token = localStorage.getItem("token");
@@ -108,15 +136,21 @@ function AdminTickets() {
                                         </td>
 
                                         <td>
-                                            {ticket.status === "Open" ? (
-                                                <button
-                                                    className="btn btn-primary btn-sm"
-                                                    onClick={() =>
-                                                        resolveTicket(ticket.id)
-                                                    }
-                                                >
-                                                    Resolve
-                                                </button>
+                                            {ticket.status !== "Resolved" ? (
+                                                <div className="d-flex gap-2">
+                                                    <button
+                                                        className="btn btn-info btn-sm text-white"
+                                                        onClick={() => replyTicket(ticket.id)}
+                                                    >
+                                                        Reply
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-success btn-sm"
+                                                        onClick={() => resolveTicket(ticket.id)}
+                                                    >
+                                                        Resolve
+                                                    </button>
+                                                </div>
                                             ) : (
                                                 <span className="text-secondary small">Resolved</span>
                                             )}

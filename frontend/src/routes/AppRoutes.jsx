@@ -17,6 +17,8 @@ import Deposit from "../pages/Deposit";
 import Withdraw from "../pages/Withdraw";
 import Transfer from "../pages/Transfer";
 import CustomerProfile from "../pages/CustomerProfile";
+import AdminSettings from "../pages/AdminSettings";
+import Notifications from "../pages/Notifications";
 
 function AppRoutes() {
     return (
@@ -31,10 +33,12 @@ function AppRoutes() {
                 <Route path="/transactions" element={<Transactions />} />
                 <Route path="/loans" element={<Loans />} />
                 <Route path="/support" element={<Support />} />
+                <Route path="/notifications" element={<Notifications />} />
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/admin-customers" element={<AdminCustomers />} />
                 <Route path="/admin-loans" element={<AdminLoans />} />
                 <Route path="/admin-tickets" element={<AdminTickets />} />
+                <Route path="/admin-settings" element={<AdminSettings />} />
                 <Route path="/admin/accounts" element={<AdminAccounts />} />
                 <Route path="/admin/transactions" element={<AdminTransactions />} />
                 <Route path="/deposit" element={<Deposit />} />

@@ -19,6 +19,7 @@ from backend.routes.account_routes import account_bp
 from backend.routes.transaction_routes import transaction_bp
 from backend.routes.loan_routes import loan_bp
 from backend.routes.support_routes import support_bp
+from backend.routes.notification_routes import notification_bp
 
 from backend.models.customer import Customer
 from backend.models.customer_profile import CustomerProfile
@@ -29,6 +30,8 @@ from backend.models.receipt import Receipt
 from backend.models.loan import LoanApplication
 from backend.models.support_ticket import SupportTicket
 from backend.models.user import User
+from backend.models.bank_settings import BankSettings
+from backend.models.notification import Notification
 
 from backend.utils.admin_seeder import create_admin
 app = Flask(__name__)
@@ -93,6 +96,11 @@ app.register_blueprint(
     url_prefix="/api/support"
 )
 
+app.register_blueprint(
+    notification_bp,
+    url_prefix="/api/notifications"
+)
+
 @app.route("/")
 def home():
     return "Bank Management Backend Running"
@@ -111,8 +119,20 @@ with app.app_context():
                 db.session.execute(text("ALTER TABLE bank_accounts ADD COLUMN transaction_pin_hash VARCHAR(128)"))
                 db.session.commit()
                 print("Added transaction_pin_hash column to bank_accounts table.")
+
+        if "transactions" in inspector.get_table_names():
+            tx_cols = [col["name"] for col in inspector.get_columns("transactions")]
+            if "description" not in tx_cols:
+                db.session.execute(text("ALTER TABLE transactions ADD COLUMN description VARCHAR(255)"))
+                db.session.commit()
+                print("Added description column to transactions table.")
     except Exception as e:
         print("Schema check skipped:", e)
+
+    try:
+        BankSettings.get_settings()
+    except Exception as e:
+        print("BankSettings initialization note:", e)
 
     create_admin()
 
