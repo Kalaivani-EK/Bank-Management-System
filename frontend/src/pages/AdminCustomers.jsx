@@ -59,6 +59,32 @@ function AdminCustomers() {
         }
     };
 
+    const handleRejectKyc = async (customerId) => {
+        try {
+            const token = localStorage.getItem("token");
+            await api.put(
+                `/admin/reject-kyc/${customerId}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            setMessage("KYC Rejected successfully.");
+            setMessageType("warning");
+            fetchCustomers();
+
+            setTimeout(() => {
+                setMessage("");
+            }, 6000);
+        } catch (error) {
+            console.error(error);
+            setMessage("Failed to reject KYC.");
+            setMessageType("danger");
+        }
+    };
+
     return (
         <MainLayout>
             <div className="mb-4">
@@ -108,14 +134,22 @@ function AdminCustomers() {
                                         </td>
                                         <td>
                                             {customer.kyc_status === "Pending" ? (
-                                                <button
-                                                    className="btn btn-success btn-sm"
-                                                    onClick={() => handleApproveKyc(customer.id)}
-                                                >
-                                                    Approve KYC
-                                                </button>
+                                                <div className="d-flex gap-2">
+                                                    <button
+                                                        className="btn btn-success btn-sm"
+                                                        onClick={() => handleApproveKyc(customer.id)}
+                                                    >
+                                                        Approve KYC
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-danger btn-sm"
+                                                        onClick={() => handleRejectKyc(customer.id)}
+                                                    >
+                                                        Reject KYC
+                                                    </button>
+                                                </div>
                                             ) : (
-                                                <span className="text-secondary small">Verified</span>
+                                                <span className="text-secondary small">{customer.kyc_status}</span>
                                             )}
                                         </td>
                                     </tr>

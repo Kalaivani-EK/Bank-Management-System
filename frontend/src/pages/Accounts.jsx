@@ -9,6 +9,7 @@ function Accounts() {
     const [accountType, setAccountType] = useState("Savings");
     const [clientName, setClientName] = useState("Finova Client");
     const [initialBalance, setInitialBalance] = useState("");
+    const [minDeposit, setMinDeposit] = useState(1000);
     const [transactionPin, setTransactionPin] = useState("");
     const [confirmTransactionPin, setConfirmTransactionPin] = useState("");
     const [showPin, setShowPin] = useState(false);
@@ -36,13 +37,25 @@ function Accounts() {
         }
     }, []);
 
+    const fetchMinDeposit = useCallback(async () => {
+        try {
+            const response = await api.get("/accounts/min-deposit");
+            if (response.data?.minimum_initial_deposit !== undefined) {
+                setMinDeposit(response.data.minimum_initial_deposit);
+            }
+        } catch (error) {
+            console.error("Failed to fetch minimum deposit", error);
+        }
+    }, []);
+
     useEffect(() => {
         const timer = window.setTimeout(() => {
             void fetchAccounts();
+            void fetchMinDeposit();
         }, 0);
 
         return () => window.clearTimeout(timer);
-    }, [fetchAccounts]);
+    }, [fetchAccounts, fetchMinDeposit]);
 
     const validatePinFields = () => {
         if (!/^[0-9]*$/.test(transactionPin) || !/^[0-9]*$/.test(confirmTransactionPin)) {
@@ -76,6 +89,15 @@ function Accounts() {
 
     const handleCreateAccount = async (e) => {
         e.preventDefault();
+        setPinError("");
+
+        const balanceVal = parseFloat(initialBalance || 0);
+        if (isNaN(balanceVal) || balanceVal < minDeposit) {
+            const formattedMin = Number.isInteger(minDeposit) ? minDeposit : minDeposit;
+            setPinError(`Initial deposit must be at least ₹${formattedMin}.`);
+            return;
+        }
+
         if (!validatePinFields()) {
             return;
         }
@@ -86,7 +108,7 @@ function Accounts() {
                 "/accounts/create",
                 {
                     account_type: accountType,
-                    initial_balance: parseFloat(initialBalance || 0),
+                    initial_balance: balanceVal,
                     transaction_pin: transactionPin,
                     confirm_transaction_pin: confirmTransactionPin
                 },
@@ -108,6 +130,7 @@ function Accounts() {
             }, 6000);
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Failed to open account. Please try again.";
+            setPinError(errorMessage);
             setMessage(errorMessage);
             setMessageType("danger");
         }
@@ -263,16 +286,24 @@ function Accounts() {
                             </div>
 
                             <div className="form-group mb-4">
-                                <label htmlFor="init-balance">Initial Deposit (₹)</label>
+                                <div className="d-flex justify-content-between align-items-center mb-1">
+                                    <label htmlFor="init-balance" className="mb-0">Initial Deposit (₹)</label>
+                                    <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 small">
+                                        Minimum Initial Deposit: ₹{minDeposit?.toLocaleString()}
+                                    </span>
+                                </div>
                                 <input
                                     id="init-balance"
                                     type="number"
                                     className="form-control"
-                                    placeholder="Enter initial amount, e.g. 5000"
+                                    placeholder={`Enter initial amount (Minimum ₹${minDeposit})`}
                                     value={initialBalance}
                                     onChange={(e) => setInitialBalance(e.target.value)}
-                                    min="0"
+                                    min={minDeposit}
                                 />
+                                <div className="form-text text-muted small mt-1">
+                                    Minimum Initial Deposit: ₹{minDeposit?.toLocaleString()}
+                                </div>
                             </div>
 
                             <div className="form-group mb-3 password-toggle-group">

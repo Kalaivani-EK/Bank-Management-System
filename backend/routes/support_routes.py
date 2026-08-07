@@ -7,6 +7,7 @@ from flask_jwt_extended import (
 
 from backend.database.db import db
 from backend.models.support_ticket import SupportTicket
+from backend.services.notification_service import NotificationService
 
 support_bp = Blueprint(
     "support",
@@ -43,6 +44,14 @@ def create_ticket():
     )
 
     db.session.add(ticket)
+
+    NotificationService.create_notification(
+        customer_id=int(user_id),
+        title="Support Ticket Created",
+        message="Your support request has been submitted successfully.",
+        notification_type="support"
+    )
+
     db.session.commit()
 
     return jsonify({

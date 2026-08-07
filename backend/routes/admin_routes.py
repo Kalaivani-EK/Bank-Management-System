@@ -6,6 +6,8 @@ from backend.models.transaction import Transaction
 from backend.models.loan import LoanApplication
 from backend.models.support_ticket import SupportTicket
 from backend.models.customer import Customer
+from backend.models.bank_settings import BankSettings
+from backend.services.notification_service import NotificationService
 
 from backend.utils.role_checker import get_current_user
 from backend.database.db import db
@@ -64,10 +66,49 @@ def approve_kyc(id):
     customer.is_active = True
     customer.kyc_status = "Approved"
 
+    NotificationService.create_notification(
+        customer_id=customer.id,
+        title="KYC Verified",
+        message="Your identity verification has been successfully completed. You now have full access to banking services.",
+        notification_type="kyc"
+    )
+
     db.session.commit()
 
     return jsonify({
         "message": f"KYC approved for {customer.name}"
+    }), 200
+
+@admin_bp.route("/reject-kyc/<int:id>", methods=["PUT"])
+@jwt_required()
+def reject_kyc(id):
+    user = get_current_user()
+
+    if user.role != "admin":
+        return jsonify({
+            "message": "Admin access required"
+        }), 403
+
+    customer = Customer.query.get(id)
+
+    if not customer:
+        return jsonify({
+            "message": "Customer not found"
+        }), 404
+
+    customer.kyc_status = "Rejected"
+
+    NotificationService.create_notification(
+        customer_id=customer.id,
+        title="KYC Rejected",
+        message="Your KYC verification was rejected. Please upload valid documents and submit again.",
+        notification_type="kyc"
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": f"KYC rejected for {customer.name}"
     }), 200
 
 @admin_bp.route("/pending-customers", methods=["GET"])
@@ -364,6 +405,13 @@ def approve_loan(id):
     loan.remarks = remarks
     loan.approved_at = datetime.utcnow()
 
+    NotificationService.create_notification(
+        customer_id=loan.customer_id,
+        title="Loan Approved",
+        message="Congratulations! Your loan application has been approved. Please check your loan details.",
+        notification_type="loan"
+    )
+
     db.session.commit()
 
     return jsonify({
@@ -389,6 +437,13 @@ def reject_loan(id):
 
     loan.status = "Rejected"
     loan.remarks = remarks
+
+    NotificationService.create_notification(
+        customer_id=loan.customer_id,
+        title="Loan Rejected",
+        message="Unfortunately, your loan application has been rejected. Please contact support for more information.",
+        notification_type="loan"
+    )
 
     db.session.commit()
 
@@ -444,6 +499,38 @@ def get_tickets():
 
     return jsonify(result), 200
 
+@admin_bp.route("/reply-ticket/<int:id>", methods=["PUT", "POST"])
+@jwt_required()
+def reply_ticket(id):
+    user = get_current_user()
+
+    if user.role != "admin":
+        return jsonify({
+            "message": "Admin access required"
+        }), 403
+
+    ticket = SupportTicket.query.get(id)
+
+    if not ticket:
+        return jsonify({
+            "message": "Ticket not found"
+        }), 404
+
+    ticket.status = "In Progress"
+
+    NotificationService.create_notification(
+        customer_id=ticket.customer_id,
+        title="Support Ticket Updated",
+        message="An admin has replied to your support ticket. Please check the conversation.",
+        notification_type="support"
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Reply sent to customer successfully"
+    }), 200
+
 @admin_bp.route("/resolve-ticket/<int:id>", methods=["PUT"])
 @jwt_required()
 def resolve_ticket(id):
@@ -463,6 +550,13 @@ def resolve_ticket(id):
         }), 404
 
     ticket.status = "Resolved"
+
+    NotificationService.create_notification(
+        customer_id=ticket.customer_id,
+        title="Support Ticket Resolved",
+        message="Your support ticket has been marked as resolved.",
+        notification_type="support"
+    )
 
     db.session.commit()
 
@@ -651,3 +745,48 @@ def admin_loan_breakdown():
         {"status": "Pending", "count": pending},
         {"status": "Rejected", "count": rejected}
     ]), 200
+
+@admin_bp.route("/settings", methods=["GET"])
+@jwt_required()
+def get_admin_settings():
+    user = get_current_user()
+    if not user or user.role != "admin":
+        return jsonify({"message": "Admin access required"}), 403
+
+    settings = BankSettings.get_settings()
+    return jsonify({
+        "id": settings.id,
+        "minimum_initial_deposit": settings.minimum_initial_deposit,
+        "updated_at": settings.updated_at.isoformat() if settings.updated_at else None
+    }), 200
+
+@admin_bp.route("/settings", methods=["PUT"])
+@jwt_required()
+def update_admin_settings():
+    user = get_current_user()
+    if not user or user.role != "admin":
+        return jsonify({"message": "Admin access required"}), 403
+
+    data = request.get_json() or {}
+    min_deposit = data.get("minimum_initial_deposit")
+
+    if min_deposit is None:
+        return jsonify({"message": "minimum_initial_deposit is required"}), 400
+
+    try:
+        min_deposit = float(min_deposit)
+    except (ValueError, TypeError):
+        return jsonify({"message": "Invalid minimum initial deposit format"}), 400
+
+    if min_deposit < 0:
+        return jsonify({"message": "Minimum initial deposit cannot be negative"}), 400
+
+    settings = BankSettings.get_settings()
+    settings.minimum_initial_deposit = min_deposit
+    db.session.commit()
+
+    return jsonify({
+        "message": "Bank settings updated successfully",
+        "minimum_initial_deposit": settings.minimum_initial_deposit,
+        "updated_at": settings.updated_at.isoformat() if settings.updated_at else None
+    }), 200

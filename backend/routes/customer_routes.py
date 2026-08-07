@@ -387,6 +387,8 @@ def get_kyc_details():
         "passport": profile.passport_doc or "Not Uploaded"
     }), 200
 
+from backend.services.notification_service import NotificationService
+
 @customer_bp.route("/kyc-upload", methods=["POST"])
 @jwt_required()
 def upload_kyc_docs():
@@ -406,6 +408,13 @@ def upload_kyc_docs():
 
     if customer.kyc_status != "Approved":
         customer.kyc_status = "Pending"
+
+    NotificationService.create_notification(
+        customer_id=customer.id,
+        title="KYC Under Verification",
+        message="Your KYC documents are currently being reviewed.",
+        notification_type="kyc"
+    )
 
     db.session.commit()
     return jsonify({"message": "KYC documents updated successfully", "kyc_status": customer.kyc_status}), 200
